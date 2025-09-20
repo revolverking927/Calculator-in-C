@@ -30,6 +30,16 @@ int getMaxSet() {
     return (x * (base * (log(constant)/log(base) - 1)) / base);
 }
 
+void printText(char text[]) {
+    // Check for NULL pointer
+    if (text == NULL) {
+        printf("Error: text is NULL\n");
+        return;
+    }
+
+    printf("%s\n", text);
+}
+
 int countOccurences(char *inputPtr, char target) {
     int count = 0;
     for (int i = 0; inputPtr[i] != '\0'; i++) {
@@ -40,6 +50,38 @@ int countOccurences(char *inputPtr, char target) {
     return count;
 }
 
+void printRows(char (*arr)[2], int numRows) {
+    for (int i = 0; i < numRows; i++) {
+        printf("%c\n", arr[i][0]);  // print only the first character
+    }
+}
+
+
+void insertElement(char* arr, int pos, char element) {
+    int n = strlen(arr); // Current number of elements in the array
+    
+
+    // Check if there's space in the array
+    if (n >= 10) {
+        printf("Array is full, cannot insert element.\n");
+    }
+
+    // Shift elements to the right
+    for (int i = n; i > pos; i--) {
+        arr[i] = arr[i - 1];
+    }
+
+    // Insert the new element
+    arr[pos] = element;
+    n++; // Increment the size of the array
+
+    // Print the updated array
+    printf("Updated array: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
 int main(void) {
     //Creating the input
     char input[maxInputChars];
@@ -95,9 +137,13 @@ int computedMaxSet = (int)getMaxSet();
     // }
     
     int numIndex = 0;
+    int symbolsIndex = 0;
     int currLen = 0;
-    char *symbolsPtr = strtok(inputPtr, symbols);
-
+    char inputCpy[100];
+    strcpy(inputCpy, inputPtr);//created a copy of the input pointer
+    char *symbolsPtr = strtok(inputCpy, symbols);//cuts the copied input pointer
+    printText(inputPtr);
+    printText(inputCpy);
     // strtok splits around delimiters
     
     while (symbolsPtr != NULL) {
@@ -105,6 +151,17 @@ int computedMaxSet = (int)getMaxSet();
         symbolsPtr = strtok(NULL, "+-*/");
     }
 
+      for (int i = 0; i < computedMaxSet + 1; i++) {   // loop through the full string
+        if (strchr("+-*/", inputPtr[i])) {         // check for operator
+            char c = inputPtr[i];
+            //insertElement(symbols[symbolsIndex++], symbolsIndex, c);
+            printf("Operator '%c' found at position %d\n", c, i);
+            symbolSplits[symbolsIndex][0] = c;
+            symbolSplits[symbolsIndex][1] = '\0';
+            symbolsIndex++;
+        }
+    }
+    printRows(symbolSplits, numSplits);
     // print results
     for (int j = 0; j < numIndex; j++) {
         printf("Splitted string is: %s\n", splits[j]);
