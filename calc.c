@@ -2,6 +2,7 @@
 #include<string.h>
 #include<stdlib.h>
 #include<math.h>
+#include<stdbool.h>
 
 #define maxInputChars 100
 
@@ -52,7 +53,7 @@ int countOccurences(char *inputPtr, char target) {
 
 void printRows(char (*arr)[2], int numRows) {
     for (int i = 0; i < numRows; i++) {
-        printf("%c\n", arr[i][0]);  // print only the first character
+        printf("Operator %i is: %c\n", i, arr[i][0]);  // print only the first character
     }
 }
 
@@ -89,18 +90,18 @@ int main(void) {
     
     //detecting the input
     detectInput(inputPtr, sizeof(input));
-    printf("%s\n", inputPtr); //double check to ensure the value was inputted
+    // printf("%s\n", inputPtr); //double check to ensure the value was inputted
 
     //getting the amounts of symbols in the input
     int numSplits = 1;
     for (int i = 0; i < strlen(symbols); i++) {
         numSplits += countOccurences(inputPtr, symbols[i]);
     }
-    printf("Number of symbols is: %d\n", numSplits);
+    printf("\nNumber of symbols is: %d\n", numSplits);
 
 int computedMaxSet = (int)getMaxSet();
    
-    printf("max set, %d\n", computedMaxSet);
+    printf("max set of characters is: %d\n", computedMaxSet);
     
     char (*splits)[6] = malloc(computedMaxSet * sizeof(*splits));
     char (*symbolSplits)[2] = malloc(numSplits * sizeof(*symbolSplits));
@@ -115,7 +116,7 @@ int computedMaxSet = (int)getMaxSet();
 
     // }
 
-    printf("\n");
+    
     
     
     //splitting the string based on the num of splits 
@@ -139,16 +140,23 @@ int computedMaxSet = (int)getMaxSet();
     int numIndex = 0;
     int symbolsIndex = 0;
     int currLen = 0;
+    bool canSkip = false;
+    int skipIndex = 0;
     char inputCpy[100];
     strcpy(inputCpy, inputPtr);//created a copy of the input pointer
     char *symbolsPtr = strtok(inputCpy, symbols);//cuts the copied input pointer
-    printText(inputPtr);
-    printText(inputCpy);
+    // printText(inputPtr);
+    printf("\nsaves the first set of values, %s to the symbols pointer\n\n", inputCpy);
     // strtok splits around delimiters
     
     while (symbolsPtr != NULL) {
-        strcpy(splits[numIndex++], symbolsPtr);
+        
+        strcpy(splits[numIndex++ + skipIndex], symbolsPtr);
         symbolsPtr = strtok(NULL, "+-*/");
+        if (!canSkip) {
+            skipIndex++;
+            //canSkip = true;
+        }
     }
 
       for (int i = 0; i < computedMaxSet + 1; i++) {   // loop through the full string
@@ -162,12 +170,44 @@ int computedMaxSet = (int)getMaxSet();
         }
     }
     printRows(symbolSplits, numSplits);
+    printf("\n");
     // print results
+    canSkip = false;
+    skipIndex = 0;
+    int maxSplits;
     for (int j = 0; j < numIndex; j++) {
-        printf("Splitted string is: %s\n", splits[j]);
+        printf("Splitted string is: %s, in position: %i\n", splits[j + skipIndex], j + skipIndex);
+        if (!canSkip) {
+            skipIndex++;
+            //canSkip = true;
+        }
+        maxSplits = j + skipIndex;
     }
+printf("\n");
+    
+    int symbolIndex = 0;
+    for (int i = 0; i < maxSplits; i++) {
+        
+        //inserting the symbols if i is odd
+        if (i % 2 != 0) {
+            //symbolIndex;
+            char operator[2] = {symbolSplits[symbolIndex][0], '\0'}; 
+            printf("symbol index for operator is %i and the symbol to be inserted is %c. ", symbolIndex, symbolSplits[symbolIndex][0]);
+            
+            strcpy(splits[i], operator);
+            
+            // splits[i] = symbolSplits[symbolIndex];
+            symbolIndex++;
+        }
 
+        printf("New split string is: %s, in position: %i", splits[i], i);
+
+       
+        printf("\n");
+    }
+    
     free(splits);
+
 
     // while (input[currLen] != '\0') {
     //     //if current char is an operator, store it directly
